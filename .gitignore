@@ -1,0 +1,4 @@
+node_modules/
+*.log
+# 示例配图不作为技能包内容提交/上传
+skills/readme-writer/images/

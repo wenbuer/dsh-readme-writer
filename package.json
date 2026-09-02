@@ -1,9 +1,39 @@
 {
   "name": "dsh-readme-writer",
   "version": "1.0.0",
-  "description": "自适应 GitHub README 撰写与截图技能：先探测截图能力，支持则询问并自动截图配图，不支持则走无截图模板；强调相对路径防丢图。",
+  "description": "自适应 GitHub README 撰写与截图技能：先探测截图能力，支持则询问并自动截图配图，不支持则走无截图模板；强调相对路径防丢图。SKILL.md 已含可被插件商城索引的 name/description/keywords/category/version 元数据。",
   "type": "module",
-  "files": ["skills", "README.md", "LICENSE"],
-  "keywords": ["dsh", "deepseek", "deepseek-harness", "plugin", "dsh-plugin", "readme", "skill", "skills", "screenshot", "文档", "github"],
+  "files": [
+    "skills/readme-writer/SKILL.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "dsh",
+    "deepseek",
+    "deepseek-harness",
+    "dsh-plugin",
+    "dsh-skill",
+    "skill",
+    "skills",
+    "readme",
+    "readme-writer",
+    "github",
+    "github-readme",
+    "documentation",
+    "docs",
+    "markdown",
+    "writing",
+    "文档",
+    "写作",
+    "screenshot",
+    "截图",
+    "配图",
+    "相对路径",
+    "badges",
+    "徽章",
+    "content-creation",
+    "内容创作"
+  ],
   "license": "MIT"
 }

@@ -1,14 +1,18 @@
 ---
 name: readme-writer
 description: >
-  撰写 / 优化 GitHub 项目 README.md 的**自适应**指南。它会先探测当前
-  agent 运行环境是否支持无头浏览器截图：支持则询问用户是否需要截图并
-  走「有截图」流程，不支持则自动走「无截图模板」。覆盖：README 标准章节
-  结构、截图能力探测与分支决策、无截图模板（文字/表格描述界面）、Markdown
-  与 HTML <img> 图片语法、相对路径引用与 GitHub 图片缓存坑、截图说明
-  （caption）写法、正反例与完成前检查清单。
-  关键词：README.md、README 结构、截图、无截图模板、能力探测、配图、
-  相对路径、GitHub 文档、项目简介、徽章。
+  撰写/优化 GitHub 项目 README.md 的自适应技能：先探测 agent 环境能否无头
+  截图，能则询问并自动截图配图（有截图模板），不能则自动走无截图模板（文字/
+  表格描述界面）。覆盖 README 标准章节结构、截图能力探测与分支决策、Markdown
+  与 HTML 图片语法、相对路径引用与 GitHub 图片缓存坑、截图说明（caption）
+  写法、正反例与完成前检查清单。
+version: 1.0.0
+keywords: >
+  readme, github, github readme, readme.md, documentation, 文档, 写作,
+  markdown, 项目简介, 徽章, badges, template, 模板, screenshot, 截图, 配图,
+  相对路径, github 文档, readme-writer, dsh, skill, dsh-plugin,
+  content-creation, 内容创作
+category: content-creation
 argument-hint: "可选：目标仓库路径；无参数时自动探测截图能力并按能力分支"
 ---
 
@@ -160,7 +164,7 @@ npm install && npm run dev
 # Windows (PowerShell) —— 用 Chrome 无头截一张
 chrome --headless --disable-gpu --no-first-run --hide-scrollbars
   --window-size=1440,900 --virtual-time-budget=7000 --run-all-compositor-stages-before-draw
-  --screenshot=./images/opc-command-center-01.png http://127.0.0.1:8901/
+  --screenshot=./images/your-project-01.png http://127.0.0.1:8901/
 ~~~
 
 **B. Playwright / Puppeteer（更强，可等待、滚动、走交互、多页）**
@@ -171,7 +175,7 @@ const { chromium } = require("playwright");
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
   await p.goto("http://127.0.0.1:8901/", { waitUntil: "networkidle" });
-  await p.screenshot({ path: "images/opc-command-center-01.png", fullPage: true });
+  await p.screenshot({ path: "images/your-project-01.png", fullPage: true });
   await b.close();
 })();
 ~~~
@@ -184,24 +188,24 @@ const { chromium } = require("playwright");
 ### 3.2 图存哪、怎么命名（防止上传后找不到）
 
 - **在项目里新建一个 `images/` 目录统一放图**（不要随意散落）；也可沿用项目已有的约定目录（如 docs/images、screenshots、assets）。与 README 同层、随仓库一起提交。
-- **按项目命名**：`项目slug-序号.png`（如 opc-command-center-01.png）；
+- **按项目命名**：`项目slug-序号.png`（如你的项目-01.png）；
   同项目多图递增编号 -02、-03...
-- **一律用相对路径引用**：images/opc-command-center-01.png。
+- **一律用相对路径引用**：images/你的项目-01.png。
   **绝不用**绝对根路径（/docs/...）或本地盘符路径（C:/...）——
   上传 / 迁移后绝对路径会失效，图就找不到；相对路径随文件走，哪都能显示。
 
 ### 3.3 图片语法与控制
 
 **Markdown 语法**（基础）：`![alt](相对路径)`，如
-`![作战面板](images/opc-command-center-01.png)`。alt 必写，加载失败/SEO/无障碍都靠它。
+`![你的界面](images/your-project-01.png)`。alt 必写，加载失败/SEO/无障碍都靠它。
 
 **HTML <img> 控制尺寸与居中**（Markdown 不能设宽高/居中）：
 
 ~~~html
 <p align="center">
-  <img src="images/opc-command-center-01.png" alt="作战面板" width="800">
+  <img src="images/your-project-01.png" alt="你的界面" width="800">
   <br>
-  <em>图 1：作战面板——左侧为组织架构，右侧为角色工作区，左下角为时间线。</em>
+  <em>图 1：你的界面——左侧为…，右侧为…，底部为…。</em>
 </p>
 ~~~
 
@@ -218,15 +222,22 @@ max-width="100%"。并排多图可用表格或并排 img；演示动作用 gif/w
 | SVG 动画不渲染 | logo 用 SVG，演示截图用 PNG/jpg/webp |
 | 超大/超宽图 | width 限宽，超宽裁剪或拆多张 |
 
-### 3.4 本 skill 的实拍示例（图就在本 skill 的 images/ 目录）
+### 3.4 相对路径 + 说明的成稿示例（配图按需生成，本仓库不内置示例图）
 
+本技能**不随包内置示例截图**——图片应由你按第 3.0~3.3 节现场截图、按项目命名
+放进目标项目的 images/ 并用相对路径引用。下面是一段「相对路径 + caption」的
+**成稿模板**，直接照抄、把 `images/your-project-01.png` 换成你的图即可：
+
+~~~html
 <p align="center">
-  <img src="images/opc-command-center-01.png" alt="OPC 指挥中心·作战面板" width="800">
+  <img src="images/your-project-01.png" alt="你的界面" width="800">
   <br>
-  <em>图 1：作战面板——左侧为组织架构，右侧为角色工作区，左下角为项目时间线。</em>
+  <em>图 1：你的界面——主体 + 动作 + 重点。</em>
 </p>
+~~~
 
-> 上面的 <img src="images/..."> 是「相对路径 + 说明」的成稿，直接照抄换图即可。
+> 要点：`src` 用相对路径 `images/xxx.png`，`alt` 必写，说明放图下方用 `<em>` 斜体。
+> 把示例图硬塞进技能包反而误导——配图是每个 README 目标项目按需生成的内容。
 
 ## 4. 截图说明（caption）怎么写
 
