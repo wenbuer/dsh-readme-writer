@@ -1,0 +1,9 @@
+{
+  "name": "dsh-readme-writer",
+  "version": "1.0.0",
+  "description": "自适应 GitHub README 撰写与截图技能：先探测截图能力，支持则询问并自动截图配图，不支持则走无截图模板；强调相对路径防丢图。",
+  "type": "module",
+  "files": ["skills", "README.md", "LICENSE"],
+  "keywords": ["dsh", "deepseek", "deepseek-harness", "plugin", "dsh-plugin", "readme", "skill", "skills", "screenshot", "文档", "github"],
+  "license": "MIT"
+}
