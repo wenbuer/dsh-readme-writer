@@ -33,11 +33,10 @@
 
 **方式一：`dsh plugin add`（推荐，装完即用）**
 
-发布到 npm 后，或用一个可解析的地址装进目标 profile：
 
 ~~~bash
-# 已发布到 npm 后
-dsh plugin --profile <profile> add dsh-readme-writer
+# dsh plugin add
+dsh plugin --profile <profile> add wenbuer/dsh-readme-writer
 
 # 或从 git / 本地目录
 dsh plugin --profile <profile> add github:wenbuer/dsh-readme-writer
