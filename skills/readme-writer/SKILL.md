@@ -1,12 +1,13 @@
 ---
 name: readme-writer
 description: >
-  撰写/优化 GitHub 项目 README.md 的自适应技能：先探测 agent 环境能否无头
-  截图，能则询问并自动截图配图（有截图模板），不能则自动走无截图模板（文字/
-  表格描述界面）。覆盖 README 标准章节结构、截图能力探测与分支决策、Markdown
-  与 HTML 图片语法、相对路径引用与 GitHub 图片缓存坑、截图说明（caption）
-  写法、正反例与完成前检查清单。
-version: 1.0.0
+  撰写/优化 GitHub 项目 README.md 的自适应技能：先判断目标类型与 agent 环境
+  能否出图——网页走浏览器截图，无网页的控制台/CLI 走终端截屏（System.Drawing /
+  HTML 终端 / termtosvg），能则询问并自动配图（有截图模板），不能则自动走
+  无截图模板（文字/表格描述界面）。覆盖 README 标准章节结构、截图能力探测与
+  分支决策、Markdown 与 HTML 图片语法、相对路径引用与 GitHub 图片缓存坑、
+  截图说明（caption）写法、正反例与完成前检查清单。
+version: 1.2.0
 keywords: >
   readme, github, github readme, readme.md, documentation, 文档, 写作,
   markdown, 项目简介, 徽章, badges, template, 模板, screenshot, 截图, 配图,
@@ -25,7 +26,20 @@ argument-hint: "可选：目标仓库路径；无参数时自动探测截图能�
 ## 0. 先定路径：探测截图能力（第一步，必做）
 
 不要默认有截图、也不要默认没有——**先探测**。用一套跨环境的检查确认能否
-无头截图，再决定走哪条分支。
+出图，再决定走哪条分支。
+
+### 0.0 先判断：要截的是什么？
+
+截图不是只有「网页」一种。**先分清目标类型**，再选对应的探测分支：
+
+| 目标 | 截图产物 | 走哪条探测 |
+|---|---|---|
+| 网页 / SPA / dev server | 浏览器截图 PNG | 0.1（无头浏览器） |
+| 控制台 / CLI / 终端脚本（无网页） | 终端截屏 PNG / SVG / GIF | 0.4（终端截屏） |
+| 两者都不是（纯文档 / 说明） | 无 | 直接走「2. 无截图模板」 |
+
+> 判断依据：目标是否暴露一个可访问的 URL / dev server 端口？有 → 网页；
+> 没有、只有命令行的 stdout/stderr → 控制台/CLI。
 
 ### 0.1 探测四步
 
@@ -44,6 +58,7 @@ argument-hint: "可选：目标仓库路径；无参数时自动探测截图能�
 
 > 命令因环境而异：PowerShell / bash / 容器 / CI 各不相同，把上面换成你所在
 > agent 能执行的等价命令即可——这就是「其他 agent 通用」的写法。
+> **本节针对「网页」；控制台 / CLI（无网页）走 0.4。**
 
 ### 0.2 分支决策
 
@@ -64,6 +79,27 @@ argument-hint: "可选：目标仓库路径；无参数时自动探测截图能�
 
 > 底线：**截图是加分项。** 探测失败或环境受限时，保证 README 照样完整、
 > 能让人看懂——这时候文字描述和结构与截图一样重要。
+
+### 0.4 终端脚本（无网页）的截屏检测
+
+控制台 / CLI 没有网页可截，但可以把它的**运行输出**渲染成一张「终端截屏」。
+三选一，按环境取可用的一层：
+
+1. **统一走浏览器（最省事）**：把 CLI 的 stdout 包进一段终端样式的 HTML
+   （深色背景 + 等宽 `<pre>` + 标题栏），再用 0.1 检测到的无头浏览器截这张 HTML。
+   这样复用「网页截图」能力，跨平台一致，不需额外工具。
+2. **.NET System.Drawing（Windows 原生，无需安装）**：直接拿 CLI 输出画成
+   终端样式 PNG（深色底 + 标题栏 + 等宽字体 + 提示行高亮）。
+   探测：`Add-Type -AssemblyName System.Drawing` 成功 且
+   `New-Object System.Drawing.Bitmap 1,1` 不报错 → 可用。
+3. **终端录像 / 转图工具**：`termtosvg`（录 SVG）、`asciinema`（录 GIF）、
+   `chafa`（终端转图）。探测：`Get-Command termtosvg / asciinema / chafa`。
+
+**验证**（同 0.1 的原则：别只看有工具，要真出图）：跑一次最小渲染，输出文件
+非空才算支持；否则降级到「2. 无截图模板」。
+
+> 命令因环境而异：Windows 优先 System.Drawing；macOS / Linux 优先
+> termtosvg / chafa；或都退到「HTML 终端 + 无头浏览器」这条统一路。
 
 ## 1. README 的标准章节结构（推荐顺序）
 
@@ -239,6 +275,54 @@ max-width="100%"。并排多图可用表格或并排 img；演示动作用 gif/w
 > 要点：`src` 用相对路径 `images/xxx.png`，`alt` 必写，说明放图下方用 `<em>` 斜体。
 > 把示例图硬塞进技能包反而误导——配图是每个 README 目标项目按需生成的内容。
 
+### 3.5 终端截屏（无网页的控制台 / CLI 项目）
+
+没有网页时，把 CLI **真实运行**的输出渲染成一张终端样式图。用 0.4 里探测到的
+其中一种办法；下面给可直接套用的两版。
+
+**A. .NET System.Drawing 自绘（Windows；已实测可用，无需装工具）**
+
+~~~~powershell
+Add-Type -AssemblyName System.Drawing
+$png = 'images/your-cli-01.png'
+# 1) 拿 CLI 真实输出（换成你的命令；stderr 一并捕获）
+$output = & .\your-cli.exe --help 2>&1 | Out-String
+$lines  = ($output -split "`r?`n") | Where-Object { $_ -ne '' }
+# 2) 画一张终端样式图（深色底 + 标题栏 + 等宽字体 + 提示行高亮）
+$font = New-Object System.Drawing.Font('Consolas',13,[System.Drawing.FontStyle]::Regular,[System.Drawing.GraphicsUnit]::Pixel)
+$pad=18; $tmp=New-Object System.Drawing.Bitmap 1,1
+$g=[System.Drawing.Graphics]::FromImage($tmp)
+$g.TextRenderingHint=[System.Drawing.Text.TextRenderingHint]::AntiAliasGridFit
+$mw=0.0; foreach($l in $lines){ $s=$g.MeasureString($l,$font); if($s.Width -gt $mw){$mw=$s.Width} }
+$lh=[math]::Ceiling($g.MeasureString('Mg',$font).Height); $g.Dispose(); $tmp.Dispose()
+$w=[int]($mw+$pad*2); $h=[int]($lines.Count*$lh+$pad*2+30)
+$bmp=New-Object System.Drawing.Bitmap($w,$h)
+$g=[System.Drawing.Graphics]::FromImage($bmp)
+$g.SmoothingMode=[System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+$g.TextRenderingHint=[System.Drawing.Text.TextRenderingHint]::AntiAliasGridFit
+$g.Clear([System.Drawing.Color]::FromArgb(255,30,30,46))
+$g.FillRectangle((New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255,45,45,65))),0,0,$w,28)
+$g.DrawString('your-cli',(New-Object System.Drawing.Font('Segoe UI',9,[System.Drawing.GraphicsUnit]::Pixel)),[System.Drawing.Brushes]::White,6,7)
+$text=New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255,220,220,230))
+$prompt=New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255,143,220,143))
+$y=$pad+28
+foreach($l in $lines){ $g.DrawString($l,$font,$(if($l -match '>'){$prompt}else{$text}),$pad,$y); $y+=$lh }
+$bmp.Save($png,[System.Drawing.Imaging.ImageFormat]::Png); $g.Dispose(); $bmp.Dispose()
+~~~~
+
+**B. HTML 终端 + 无头浏览器（跨平台统一，复用 0.1 的浏览器）**
+
+把 CLI 输出包成终端样式 HTML（深色底 + `<pre>` 等宽 + 标题栏），再用
+`chrome --headless` 或 playwright 截这张 HTML —— 不用装任何终端工具。
+
+**C. termtosvg / asciinema（Linux / macOS 常用）**
+
+- `termtosvg`：录成可缩放 SVG，README 中控 `width`。
+- `asciinema`：录成 GIF，控制在几 MB 内。
+
+**终端截屏同样遵循**：图存 images/、按项目命名带编号、用**相对路径**引用、
+每张配一句「主体 + 动作 + 重点」的说明（见 3.2 / 3.3 / 4）。
+
 ## 4. 截图说明（caption）怎么写
 
 **只要放了图，就该有一句说明。** 一条好的说明 = 三要素：这是什么（主体）
@@ -282,6 +366,7 @@ max-width="100%"。并排多图可用表格或并排 img；演示动作用 gif/w
 
 **有截图时**：
 - [ ] 先询问过用户是否要截图（不私自截图）。
+- [ ] 若是控制台 / CLI 项目，用的是「终端截屏」（System.Drawing / HTML 终端 / termtosvg），不是浏览器截图。
 - [ ] 图存 images/，按项目命名带序号，用**相对路径**引用。
 - [ ] 每张图有一句说明（主体 + 动作 + 重点），居中并在图下。
 - [ ] 横向长截图已限宽（width），gif 几 MB 内，已处理缓存。

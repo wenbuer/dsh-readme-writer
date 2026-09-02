@@ -1,10 +1,17 @@
 {
   "name": "dsh-readme-writer",
-  "version": "1.0.0",
-  "description": "自适应 GitHub README 撰写与截图技能：先探测截图能力，支持则询问并自动截图配图，不支持则走无截图模板；强调相对路径防丢图。SKILL.md 已含可被插件商城索引的 name/description/keywords/category/version 元数据。",
+  "version": "1.2.0",
+  "description": "自适应 GitHub README 撰写与截图技能：先判断目标类型与截图能力——网页走浏览器截图，无网页的控制台/CLI 走终端截屏（System.Drawing / HTML 终端 / termtosvg），能则询问并自动配图，不能则走无截图模板；强调相对路径防丢图。作为 dsh 插件（cordis skill-bundle）安装后由 host 层注册 readme-writer 技能；SKILL.md 含可被插件商城索引的 name/description/keywords/category/version 元数据。",
   "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
   "files": [
-    "skills/readme-writer/SKILL.md",
+    "lib",
+    "skills",
+    "cordis.patch.yml",
     "README.md",
     "LICENSE"
   ],
@@ -35,5 +42,22 @@
     "content-creation",
     "内容创作"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wenbuer/dsh-readme-writer.git"
+  },
+  "homepage": "https://github.com/wenbuer/dsh-readme-writer",
+  "bugs": {
+    "url": "https://github.com/wenbuer/dsh-readme-writer/issues"
+  },
+  "scripts": {
+    "verify": "node scripts/verify-provider.mjs",
+    "prepublishOnly": "node scripts/verify-provider.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
 }

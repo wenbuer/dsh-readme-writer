@@ -1,6 +1,6 @@
 # dsh-readme-writer
 
-> 自适应 GitHub README 撰写与**截图**技能：先探测截图能力，支持则询问并自动截图配图，不支持则走无截图模板。
+> 自适应 GitHub README 撰写与**截图**技能：先判断目标类型与截图能力——网页走浏览器截图，无网页的控制台/CLI 走终端截屏（.NET System.Drawing 自绘 / HTML 终端 + 无头浏览器 / termtosvg），能则询问并自动配图，不能则走无截图模板。
 
 ![type](https://img.shields.io/badge/type-skill-blue)
 ![category](https://img.shields.io/badge/category-content--creation-orange)
@@ -17,9 +17,10 @@
 
 ## 为什么不一样
 
-- **先探测，再决定**：写 README 前先检查当前 agent 环境能否无头截图。
-  - 能截图 → 询问用户是否要图，要就自动截图配图；
-  - 不能截图 → 直接走无截图模板（表格 + 文字描述界面），README 照样完整。
+- **先判断类型，再探测，再决定**：写 README 前先确认目标是网页还是控制台/CLI，再检查当前 agent 环境能否出图。
+  - 网页 → 能否无头截图（chrome / playwright / puppeteer）？能 → 询问截图；不能 → 无截图模板。
+  - 控制台/CLI（无网页）→ 把运行输出渲染成**终端截屏**：.NET System.Drawing 自绘（Windows 原生，无需安装）/ HTML 终端 + 无头浏览器（跨平台统一）/ termtosvg、asciinema；都不行 → 无截图模板。
+  - 两者都做不了 → 直接走无截图模板（表格 + 文字描述界面），README 照样完整。
 - **防丢图的相对路径**：截图统一放目标项目内 images/，按项目命名带编号，用相对路径引用。
 - **截图说明规范**：每张图配一句「主体 + 动作 + 重点」。
 - **踩坑降级**：headless 浏览器在受限沙箱可能因禁进程间通信（mojo / named pipe）崩溃，
@@ -29,22 +30,30 @@
 
 ## 安装
 
-**方式一：放进用户级技能目录（立即生效）**
+**方式一：`dsh plugin add`（推荐，装完即用）**
+
+发布到 npm 后，或用一个可解析的地址装进目标 profile：
 
 ~~~bash
-# 把 skills/ 下的 readme-writer 拷到 ~/.dsh/skills/
+# 已发布到 npm 后
+dsh plugin --profile <profile> add dsh-readme-writer
+
+# 或从 git / 本地目录
+dsh plugin --profile <profile> add github:wenbuer/dsh-readme-writer
+dsh plugin --profile <profile> add file:../dsh-readme-writer
+~~~
+
+> 本包是 cordis skill-bundle：`package.json` 里 `dsh.bundle.patch` 指向 `cordis.patch.yml`。
+> `dsh plugin add` 会把它加进 profile 的 `dsh.profile.bundles`，并在 host 层用
+> `lib/index.js` 的 `apply(ctx)` 向 `ctx.skills` 注册 `readme-writer` 技能。
+> 装完重启 dsh，即可在可用技能里看到 `readme-writer`。
+
+**方式二：放进用户级技能目录（手动，立即生效）**
+
+~~~bash
 mkdir -p ~/.dsh/skills/readme-writer
 cp skills/readme-writer/SKILL.md ~/.dsh/skills/readme-writer/
 ~~~
-
-**方式二：作为 dsh 插件 / npm 包**
-
-~~~bash
-git clone https://github.com/wenbuer/dsh-readme-writer.git
-# 或 npm install dsh-readme-writer（发布后）
-~~~
-
-> 安装后重启 dsh，即可在可用技能里看到 `readme-writer`。
 
 ## 使用
 
@@ -55,9 +64,14 @@ git clone https://github.com/wenbuer/dsh-readme-writer.git
 
 ~~~
 dsh-readme-writer/
-├── package.json
+├── package.json            # name/version + main/exports + dsh.bundle.patch
 ├── README.md
 ├── LICENSE
+├── cordis.patch.yml        # 把本插件挂进 profile bundle 的 patch 层
+├── lib/
+│   └── index.js            # cordis 插件：apply(ctx) 向 ctx.skills 注册 readme-writer 技能
+├── scripts/
+│   └── verify-provider.mjs # 独立校验：skill 能通过 provider 加载（npm run verify）
 └── skills/
     └── readme-writer/
         └── SKILL.md        # 含可搜索元数据（name/description/keywords/category/version）
@@ -68,16 +82,19 @@ dsh-readme-writer/
 
 ## 发布与投稿
 
-想在 dsh 插件商城（SkillHub）搜索到本技能：
+想通过 `dsh plugin add` 安装、并进入 dsh 插件商城（SkillHub）搜索到本技能：
 
 1. 把本仓库推到 GitHub（公开）。
-2. 在 SkillHub / dsh 商城按分类 `content-creation`（内容创作）提交 SKILL.md 的 zip 包；
-   或提 PR 到 `awesome-dsh-plugin` 等精选列表。
+2. 发布到 npm（`npm publish`），`dsh plugin add dsh-readme-writer` 才能从 registry 装到；
+   或在 `awesome-dsh-plugin` 等精选列表里给 git / npm 地址。
 3. 搜索可命中字段已备好：`name=readme-writer`、`description`、`keywords`、`category`、`version`。
    搜索用 `keyword`（分词）+ `category` 筛选；关键词命中权重高于正文。
 
 投稿时突出差异化：README 配图 + 截图自适应（探测 → 有图/无图 → 相对路径 + caption），
 与 docgen 等「文本生成」区分开。
+
+> 仓库内 `npm run verify` 会独立校验：模拟 host 的 `ctx.skills`，调用插件的
+> provider `list()`/`get()`，确认 `readme-writer` 能被正确发现并加载 —— 供评审对照源码核验。
 
 ## 许可证
 
