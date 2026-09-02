@@ -290,18 +290,3 @@ max-width="100%"。并排多图可用表格或并排 img；演示动作用 gif/w
 **无截图时**：
 - [ ] 无空图占位；用「模块→作用」表格或文字清晰描述界面。
 - [ ] 一句话定位 / 特性写得足够具体，弥补无图的「可视化不足」。
-
-## 6. 参考来源
-
-- readme-guidelines（README 结构与排版指南）：
-  https://github.com/maximosovsky/readme-guidelines
-- README Template（章节模板）：
-  https://github.com/rios0rios0/guide/blob/main/Life-Cycle/Documentation-%26-Change-Control/README-Template.md
-- How to add images to README.md on GitHub?（StackOverflow）：
-  https://stackoverflow.com/questions/35098087
-- How do I center an image in the README.md file on GitHub?（StackOverflow）：
-  https://stackoverflow.com/questions/12090472
-- KodeKloud：Components of a Good README：
-  https://notes.kodekloud.com/docs/GitHub-Foundations-Certification/GitHub-Repositories/Components-of-a-Good-README-and-the-Recommended-Repository-Files/page
-- 好看又规范的 GitHub Readme 制作指南（阿里云开发者社区）：
-  https://developer.aliyun.com/article/1592268
