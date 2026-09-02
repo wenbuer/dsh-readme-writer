@@ -5,6 +5,7 @@
 ![type](https://img.shields.io/badge/type-skill-blue)
 ![category](https://img.shields.io/badge/category-content--creation-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
+![verify](https://github.com/wenbuer/dsh-readme-writer/actions/workflows/verify.yml/badge.svg)
 
 ## 这是什么
 
@@ -60,6 +61,19 @@ cp skills/readme-writer/SKILL.md ~/.dsh/skills/readme-writer/
 直接说「帮我写这个项目的 README」即可。技能会：自动探测截图能力 →（支持）询问是否要图
 → 按「有截图」或「无截图」模板生成，并遵循相对路径 + 配图说明约定。
 
+## 截图 / Screenshots
+
+插件自身的展示截图（供 dsh-market 详情页 / 本 README 使用；由 `screenshots.json` 声明）：
+
+![verify](assets/readme-writer-verify.png)
+*图 1：`npm run verify` —— 真实校验输出，证明 `readme-writer` 能经插件 provider 正确发现并加载。*
+
+![terminal](assets/readme-writer-terminal.png)
+*图 2：终端截屏 —— 对「无网页的控制台 / CLI」项目，技能把运行输出渲染成终端样式截图。*
+
+> 这两张是**插件自身**的展示截图；技能为**每个目标项目**写 README 时按需生成的配图
+> 仍遵循「图存 images/、相对路径、每张一句说明」的约定（见 SKILL.md 3.0~3.4），二者不是一回事。
+
 ## 目录结构
 
 ~~~
@@ -67,30 +81,40 @@ dsh-readme-writer/
 ├── package.json            # name/version + main/exports + dsh.bundle.patch
 ├── README.md
 ├── LICENSE
+├── CHANGELOG.md
+├── screenshots.json        # 声明 1-8 张展示截图（dsh-market 详情页用）
 ├── cordis.patch.yml        # 把本插件挂进 profile bundle 的 patch 层
+├── assets/                 # 插件自身展示截图（readme-writer-*.png）
 ├── lib/
 │   └── index.js            # cordis 插件：apply(ctx) 向 ctx.skills 注册 readme-writer 技能
 ├── scripts/
 │   └── verify-provider.mjs # 独立校验：skill 能通过 provider 加载（npm run verify）
+├── .github/
+│   └── workflows/
+│       └── verify.yml      # CI：每次 push 跑 npm run verify
+├── submission/
+│   └── wenbuer__dsh-readme-writer.yml  # awesome-dsh-plugin 投稿条目（data/plugins 用）
 └── skills/
     └── readme-writer/
         └── SKILL.md        # 含可搜索元数据（name/description/keywords/category/version）
 ~~~
 
-> 本仓库**不含 images/ 目录**：配图由技能在写 README 时为具体目标项目按需截图生成（见 3.0~3.4），
-> 不随技能包内置示例图，因此也就无需上传任何图片文件夹。
+> 技能**不随包内置 README 示例截图**——配图由技能在写 README 时为具体目标项目按需截图生成（见 SKILL.md 3.0~3.4）。
+> 上文 `assets/` 里是**插件自身**的展示截图（只用于本 README / dsh-market 详情页，经 `screenshots.json` 声明），
+> 与「技能为每个项目现场生成的那类配图」是两回事，请勿混用。
 
 ## 发布与投稿
 
 想通过 `dsh plugin add` 安装、并进入 dsh 插件商城（SkillHub）搜索到本技能：
 
-1. 把本仓库推到 GitHub（公开）。
-2. 发布到 npm（`npm publish`），`dsh plugin add dsh-readme-writer` 才能从 registry 装到；
-   或在 `awesome-dsh-plugin` 等精选列表里给 git / npm 地址。
-3. 搜索可命中字段已备好：`name=readme-writer`、`description`、`keywords`、`category`、`version`。
-   搜索用 `keyword`（分词）+ `category` 筛选；关键词命中权重高于正文。
+1. 把本仓库推到 GitHub（公开）——已完成。
+2. 进英文列表以 **GitHub 仓库地址** 提交即可：`dsh plugin add github:wenbuer/dsh-readme-writer` 能装，
+   **不需要 npm 包**（发布与否不影响收录）。投稿条目见 `submission/wenbuer__dsh-readme-writer.yml`，
+   `category: skill`，`description.en` 必填、已含句号。
+   - 前提（CI 自动检查，需你先满足）：仓库**满 1 天**、**提交数 ≥ 10**、给仓库加 **`dsh-plugin` topic**。
+3. 若日后发布到 npm，`dsh plugin add dsh-readme-writer` 才能从 registry 装到；商城也会按下载量展示。
 
-投稿时突出差异化：README 配图 + 截图自适应（探测 → 有图/无图 → 相对路径 + caption），
+投稿时突出差异化：README 配图 + 截图自适应（探测 → 有图/无图/终端截屏 → 相对路径 + caption），
 与 docgen 等「文本生成」区分开。
 
 > 仓库内 `npm run verify` 会独立校验：模拟 host 的 `ctx.skills`，调用插件的
