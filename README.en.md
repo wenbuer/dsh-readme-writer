@@ -1,6 +1,6 @@
 # dsh-readme-writer
 
-> Adaptive GitHub README writing **and** screenshot skill for DeepSeek Harness: detects image-capture capability (web browser, or console/CLI terminal capture), then writes or optimizes README.md with relative-path screenshots and captions.
+> This skill helps you write or improve a GitHub project's README, and adds pictures along the way. If the project has a web page, it takes a screenshot of that page. If the project is a command-line program with no web page, it turns the program's running output into a "terminal" picture. If neither is possible, it explains the interface with plain text and a table instead.
 
 ![type](https://img.shields.io/badge/type-skill-blue)
 ![category](https://img.shields.io/badge/category-skill-blue)
@@ -9,15 +9,13 @@
 
 ## What it is
 
-An agent skill for [DeepSeek Harness (dsh)](https://github.com/deepseek-ai/deepseek-harness) that writes
-and optimizes GitHub project `README.md`. Its key difference from a plain "README text" generator is
-**adaptive screenshots**:
+This is a skill for [DeepSeek Harness (dsh)](https://github.com/deepseek-ai/deepseek-harness). Just say "write the README for this project" and it writes or improves your GitHub project's main page.
 
-- **Detect target type first**, then capability.
-- For a **web page / SPA / dev server** → headless browser screenshot.
-- For a **console / CLI project (no web page)** → render its runtime output into a **terminal-style screenshot**
-  (.NET System.Drawing on Windows, an HTML-terminal + headless browser, or termtosvg / asciinema).
-- If neither is possible → fall back to a text/table "no screenshot" template, still complete.
+Its biggest difference from a "text-only" README tool is that it tries to add pictures — and it picks the right kind on its own:
+
+- The project has a web page → it takes a screenshot of that page.
+- The project is a command-line program with no web page → it turns the program's running output into a terminal-style picture.
+- Neither is possible → it describes the interface with plain text and a table, so the README is still complete (no empty placeholder picture).
 
 ## Install
 

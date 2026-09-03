@@ -1,6 +1,6 @@
 # dsh-readme-writer
 
-> 自适应 GitHub README 撰写与**截图**技能：先判断目标类型与截图能力——网页走浏览器截图，无网页的控制台/CLI 走终端截屏（.NET System.Drawing 自绘 / HTML 终端 + 无头浏览器 / termtosvg），能则询问并自动配图，不能则走无截图模板。
+> 这个技能帮你写或改进 GitHub 项目的主页说明（README），还会顺手给项目配上图。能截网页就截网页；只有命令行程序、没有网页的，就把程序跑起来的样子画成一张终端图；实在截不了，就用文字和表格把界面讲清楚，说明照样完整。
 
 ![type](https://img.shields.io/badge/type-skill-blue)
 ![category](https://img.shields.io/badge/category-content--creation-orange)
@@ -9,25 +9,22 @@
 
 ## 这是什么
 
-一个给 DeepSeek Harness（dsh）用的 Agent Skill，负责写 / 优化 GitHub 项目 README.md。
-它与普通「README 文本生成」技能的关键差异是：**配图 + 截图自适应**。
+这是给 DeepSeek Harness（dsh）用的一个技能。你只要说「帮我写这个项目的 README」，它就会帮你把 GitHub 项目的主页说明写好或改好。
 
-> 包内已按 dsh 插件商城（SkillHub）的可搜索规范写好 SKILL.md 元数据：
-> `name`（标题）、`description`（摘要）、`keywords`（关键词）、`category`、`version`。
-> 搜索命中后按 title > summary/keywords 加权，关键词塞得越准越好搜到。
+它和一般「只负责出文字」的 README 工具最大的不同是：**它会尽量给项目配上图**，而且图不是乱放的，会看情况来：
 
-## 为什么不一样
+- 项目有网页 → 截一张网页的图放进去；
+- 项目是命令行程序、没有网页 → 把程序跑起来的样子画成一张终端图；
+- 两种都做不到 → 就用文字和表格把界面讲清楚，README 照样完整，不会放个空图占位。
 
-- **先判断类型，再探测，再决定**：写 README 前先确认目标是网页还是控制台/CLI，再检查当前 agent 环境能否出图。
-  - 网页 → 能否无头截图（chrome / playwright / puppeteer）？能 → 询问截图；不能 → 无截图模板。
-  - 控制台/CLI（无网页）→ 把运行输出渲染成**终端截屏**：.NET System.Drawing 自绘（Windows 原生，无需安装）/ HTML 终端 + 无头浏览器（跨平台统一）/ termtosvg、asciinema；都不行 → 无截图模板。
-  - 两者都做不了 → 直接走无截图模板（表格 + 文字描述界面），README 照样完整。
-- **防丢图的相对路径**：截图统一放目标项目内 images/，按项目命名带编号，用相对路径引用。
-- **截图说明规范**：每张图配一句「主体 + 动作 + 重点」。
-- **踩坑降级**：headless 浏览器在受限沙箱可能因禁进程间通信（mojo / named pipe）崩溃，
-  技能会据此降级到无截图模板，而不是硬试。
+> 这个技能能在 dsh 的插件市场里被搜到，因为它的说明文件里已经写好了标题、简介、关键词、分类和版本号。
 
-同类里已有 docgen（README 文本生成）、dsh-technical-writer 等，但都不含「截图自适应」这一条线。
+## 它好在哪里
+
+- **不用你操心图怎么弄**：它先看当前环境能不能截图，能就走截图的路线，截不到就自动退回「只用文字」。
+- **图不会丢**：截图统一放在项目里的 images/ 文件夹，用相对路径引用。换电脑、传到 GitHub，图都找得到。
+- **每张图都有说明**：图下面会配一句话，告诉读者这张图在讲什么。
+- **同类工具大多不配图**：像 docgen 这类主要只生成文字，这个技能把「配图」这一条补上了。
 
 ## 安装
 
